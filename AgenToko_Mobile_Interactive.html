@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0f1a">
+<title>AgenToko</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0b0f1a; --bg2:#111827; --surface:#131c2e; --surface2:#182236;
+  --border:#1e2d45; --border2:#253552;
+  --ink:#f0f4ff; --ink2:#94a3b8; --muted:#4b607c;
+  --accent:#3b82f6; --accent-g:linear-gradient(135deg,#3b82f6,#6366f1);
+  --accent-s:rgba(59,130,246,0.14); --accent-s2:rgba(59,130,246,0.06);
+  --green:#10b981; --green-s:rgba(16,185,129,0.14);
+  --amber:#f59e0b; --amber-s:rgba(245,158,11,0.14);
+  --red:#ef4444; --red-s:rgba(239,68,68,0.14);
+  --purple:#8b5cf6; --purple-s:rgba(139,92,246,0.14);
+  --cyan:#06b6d4; --pink:#ec4899;
+  --nav-h:64px; --sb:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--ink);display:flex;flex-direction:column;max-width:430px;margin:0 auto;}
+
+/* STATUS BAR */
+.sb{height:44px;background:var(--bg2);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.sb-t{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
+.sb-r{display:flex;align-items:center;gap:6px;}
+.sig{display:flex;align-items:flex-end;gap:2px;height:12px;}
+.sig span{width:3px;background:var(--ink);border-radius:1px;}
+.sig span:nth-child(1){height:4px;} .sig span:nth-child(2){height:7px;} .sig span:nth-child(3){height:10px;} .sig span:nth-child(4){height:12px;}
+.bat{width:22px;height:11px;border:1.5px solid var(--ink);border-radius:2px;position:relative;display:flex;align-items:center;padding:1.5px;}
+.bat::after{content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:2px;height:5px;background:var(--ink);border-radius:0 1px 1px 0;}
+.bat-f{height:100%;background:var(--green);border-radius:1px;width:75%;}
+
+/* TOPBAR */
+.topbar{background:var(--bg2);padding:10px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.tb1{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-i{width:30px;height:30px;background:var(--accent-g);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 14px rgba(59,130,246,0.4);}
+.logo-t{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-0.02em;}
+.logo-t span{background:var(--accent-g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tb-acts{display:flex;align-items:center;gap:7px;}
+.tb-btn{width:32px;height:32px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;position:relative;transition:all .15s;}
+.tb-btn:active{transform:scale(.92);border-color:var(--accent);}
+.tb-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid var(--bg2);}
+.live-b{display:flex;align-items:center;gap:5px;background:var(--green-s);color:var(--green);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid rgba(16,185,129,.2);}
+.live-d{width:6px;height:6px;background:var(--green);border-radius:50%;animation:lp 1.4s ease infinite;box-shadow:0 0 6px var(--green);}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.tb2{display:flex;align-items:center;justify-content:space-between;}
+.tb-title{font-size:13px;font-weight:700;}
+.tb-sub{font-size:10px;color:var(--muted);}
+.tb-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink2);}
+
+/* TICKER */
+.ticker{background:var(--bg);border-bottom:1px solid var(--border);height:28px;display:flex;align-items:center;overflow:hidden;flex-shrink:0;}
+.tick-lbl{padding:0 10px;font-size:8.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);white-space:nowrap;border-right:1px solid var(--border);height:100%;display:flex;align-items:center;}
+.tick-scroll{flex:1;overflow:hidden;}
+.tick-track{display:flex;animation:tick 30s linear infinite;white-space:nowrap;}
+.tick-item{display:inline-flex;align-items:center;gap:5px;padding:0 16px;font-size:10px;color:var(--ink2);}
+.tick-dot{width:4px;height:4px;border-radius:50%;}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;padding:14px 14px calc(var(--nav-h) + var(--sb) + 14px);display:none;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;}
+.page.active{display:flex;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s;}
+.card-hdr{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+
+/* BANNER */
+.banner{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.08));border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:14px;position:relative;overflow:hidden;cursor:pointer;transition:transform .15s;}
+.banner:active{transform:scale(.99);}
+.banner::after{content:'';position:absolute;top:-30%;right:-10%;width:120px;height:120px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);pointer-events:none;}
+.banner-icon{font-size:26px;margin-bottom:5px;}
+.banner-title{font-size:14px;font-weight:800;margin-bottom:3px;}
+.banner-sub{font-size:11px;color:var(--ink2);line-height:1.5;}
+.banner-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.bp{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid;cursor:pointer;transition:all .15s;}
+.bp:active{transform:scale(.94);}
+.bp.g{background:var(--green-s);color:var(--green);border-color:rgba(16,185,129,.2);}
+.bp.b{background:var(--accent-s);color:var(--accent);border-color:rgba(59,130,246,.2);}
+.bp.p{background:var(--purple-s);color:var(--purple);border-color:rgba(139,92,246,.2);}
+.bp.a{background:var(--amber-s);color:var(--amber);border-color:rgba(245,158,11,.2);}
+.bp.active-pill{transform:scale(1.08);box-shadow:0 0 8px currentColor;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;position:relative;overflow:hidden;cursor:pointer;transition:all .15s;}
+.stat-card:active{transform:scale(.96);}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;}
+.sc-b::after{background:linear-gradient(90deg,#3b82f6,#6366f1);}
+.sc-g::after{background:linear-gradient(90deg,#10b981,#34d399);}
+.sc-a::after{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.sc-p::after{background:linear-gradient(90deg,#8b5cf6,#c084fc);}
+.s-icon-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.s-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.dlt{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.d-up{background:var(--green-s);color:var(--green);}
+.d-dn{background:var(--red-s);color:var(--red);}
+.s-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:2px;transition:color .3s,transform .3s;}
+.s-lbl{font-size:10.5px;color:var(--muted);}
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:18px;margin-top:6px;}
+.spark{width:5px;border-radius:2px;transition:height .5s ease;}
+
+/* CHART */
+.chart-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.chart-tab{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;border:1px solid transparent;}
+.chart-tab.active{background:var(--accent-s);color:var(--accent);border-color:rgba(59,130,246,.2);}
+.chart-tab:active{transform:scale(.95);}
+.chart-area{padding:12px 14px 14px;}
+.chart-wrap{display:flex;align-items:flex-end;gap:4px;height:100px;}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
+.chart-col:active .chart-bg{border-color:var(--accent);}
+.chart-bg{width:100%;background:var(--surface2);border-radius:4px;height:78px;display:flex;align-items:flex-end;overflow:hidden;border:1px solid var(--border);transition:border-color .2s;}
+.chart-fill{width:100%;border-radius:3px;transition:height .8s cubic-bezier(.4,0,.2,1);}
+.chart-lbl{font-size:8.5px;color:var(--muted);}
+.chart-num{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--ink2);}
+.chart-tooltip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;color:var(--ink);text-align:center;margin-bottom:4px;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* AGENTS */
+.agent-list{padding:8px;display:flex;flex-direction:column;gap:5px;}
+.agent-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;}
+.agent-row:active,.agent-row.expanded{border-color:var(--accent);background:var(--accent-s2);}
+.agent-ava{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.agent-info{flex:1;min-width:0;}
+.agent-name{font-size:12.5px;font-weight:700;}
+.agent-task{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.agent-prog{height:3px;background:var(--border);border-radius:2px;margin-top:5px;}
+.agent-prog-f{height:100%;background:var(--accent-g);border-radius:2px;transition:width .8s ease;}
+.agent-stat-r{text-align:right;flex-shrink:0;}
+.agent-num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;transition:color .3s;}
+.agent-unit{font-size:9.5px;color:var(--muted);}
+.s-pill{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:2px;}
+.sp-on{background:var(--green-s);color:var(--green);}
+.sp-busy{background:var(--amber-s);color:var(--amber);}
+.sdot{width:4px;height:4px;border-radius:50%;background:currentColor;}
+.agent-detail{padding:0 10px 10px;display:none;flex-direction:column;gap:6px;}
+.agent-detail.open{display:flex;}
+.agent-detail-stat{display:flex;justify-content:space-between;padding:7px 10px;background:var(--surface);border-radius:7px;border:1px solid var(--border);}
+.ads-label{font-size:11px;color:var(--ink2);}
+.ads-val{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;}
+.agent-action-btn{padding:8px;background:var(--accent-s);color:var(--accent);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:11.5px;font-weight:700;text-align:center;cursor:pointer;transition:all .15s;}
+.agent-action-btn:active{transform:scale(.97);background:var(--accent-s);}
+
+/* CHAT */
+.plat-row{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);overflow-x:auto;}
+.plat-row::-webkit-scrollbar{display:none;}
+.plat-btn{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;border:1px solid;font-size:10.5px;font-weight:700;white-space:nowrap;cursor:pointer;transition:all .15s;}
+.plat-btn:active{transform:scale(.94);}
+.plat-btn.sel{box-shadow:0 0 0 2px currentColor;}
+.pb-s{background:rgba(255,87,34,.1);color:#ff5722;border-color:rgba(255,87,34,.25);}
+.pb-t{background:rgba(0,176,79,.1);color:#00b04f;border-color:rgba(0,176,79,.25);}
+.pb-w{background:rgba(37,211,102,.1);color:#25d366;border-color:rgba(37,211,102,.25);}
+.pb-tt{background:rgba(254,44,85,.1);color:#fe2c55;border-color:rgba(254,44,85,.25);}
+.pb-l{background:rgba(0,102,204,.1);color:#0066cc;border-color:rgba(0,102,204,.25);}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;}
+.msg{display:flex;gap:7px;animation:msgIn .3s ease both;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.out{flex-direction:row-reverse;}
+.msg-ava{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
+.msg-body{max-width:82%;}
+.msg-who{font-size:9px;font-weight:600;color:var(--muted);margin-bottom:2px;}
+.out .msg-who{text-align:right;}
+.msg-bub{padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.55;}
+.msg.inc .msg-bub{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:3px;}
+.msg.out .msg-bub{background:var(--accent-g);color:white;border-top-right-radius:3px;}
+.msg-bub.ai-typing{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:3px;padding:10px 14px;}
+.msg-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;}
+.out .msg-t{text-align:right;}
+.tdots{display:flex;gap:4px;align-items:center;}
+.tdot{width:5px;height:5px;background:var(--muted);border-radius:50%;animation:bounce 1.2s ease infinite;}
+.tdot:nth-child(2){animation-delay:.2s;} .tdot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-bar{padding:10px 12px calc(10px + var(--sb));border-top:1px solid var(--border);display:flex;gap:8px;background:var(--surface);flex-shrink:0;}
+.chat-inp{flex:1;padding:10px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;}
+.chat-inp::placeholder{color:var(--muted);}
+.chat-inp:focus{border-color:var(--accent);}
+.send-btn{width:42px;height:42px;background:var(--accent-g);border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;color:white;cursor:pointer;flex-shrink:0;box-shadow:0 0 12px rgba(59,130,246,.35);transition:all .15s;}
+.send-btn:active{transform:scale(.92);}
+.ai-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.1));border:1px solid rgba(59,130,246,.2);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+
+/* REVENUE */
+.rev-content{padding:14px;display:flex;flex-direction:column;gap:8px;}
+.rev-big{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;background:var(--accent-g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rev-row{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--surface2);border-radius:9px;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+.rev-row:active{border-color:var(--accent);}
+.rev-l{font-size:12px;color:var(--ink2);}
+.rev-v{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;}
+
+/* NOTIF */
+.notif-list{padding:8px;display:flex;flex-direction:column;gap:5px;}
+.notif-item{display:flex;gap:9px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;animation:notifIn .35s ease both;}
+.notif-item:active{border-color:var(--accent);transform:scale(.99);}
+.notif-item.new{border-color:rgba(59,130,246,.35);background:var(--accent-s2);}
+@keyframes notifIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+.ni-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ni-title{font-size:12px;font-weight:700;margin-bottom:1px;}
+.ni-desc{font-size:10.5px;color:var(--muted);line-height:1.4;}
+.ni-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;}
+.ni-dismiss{font-size:12px;color:var(--muted);flex-shrink:0;padding:4px;}
+
+/* ROI CALC */
+.roi-wrap{padding:14px;display:flex;flex-direction:column;gap:10px;}
+.roi-lbl{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:3px;}
+.roi-slider-wrap{display:flex;flex-direction:column;gap:4px;}
+.roi-slider{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:2px;outline:none;cursor:pointer;}
+.roi-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent-g);cursor:pointer;box-shadow:0 0 8px rgba(59,130,246,.4);}
+.roi-slider-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--ink);}
+.roi-result{padding:14px;background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(59,130,246,.08));border:1px solid rgba(16,185,129,.25);border-radius:10px;text-align:center;}
+.roi-res-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink2);margin-bottom:4px;}
+.roi-res-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--green);transition:all .3s;}
+.roi-res-sub{font-size:10.5px;color:var(--ink2);margin-top:3px;}
+
+/* TOGGLE SWITCH */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-label{font-size:13px;color:var(--ink);}
+.toggle-sub{font-size:10.5px;color:var(--muted);margin-top:1px;}
+.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.toggle.on::after{transform:translateX(20px);}
+
+/* MENU ITEMS */
+.menu-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.menu-item:active{background:var(--surface2);}
+.menu-item:last-child{border-bottom:none;}
+.menu-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.menu-label{flex:1;font-size:13.5px;font-weight:500;}
+.menu-arrow{color:var(--muted);font-size:14px;}
+.menu-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--accent-s);color:var(--accent);}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:calc(var(--nav-h) + var(--sb));background:rgba(17,24,39,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-around;padding-top:8px;z-index:800;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 14px;cursor:pointer;transition:all .15s;position:relative;min-width:52px;}
+.nb:active{transform:scale(.9);}
+.nb.active .nb-ico{filter:drop-shadow(0 0 6px var(--accent));}
+.nb.active .nb-lbl{color:var(--accent);}
+.nb-ico{font-size:22px;}
+.nb-lbl{font-size:9.5px;font-weight:600;color:var(--muted);transition:color .15s;}
+.nb-badge{position:absolute;top:0px;right:6px;background:var(--red);color:white;font-size:8px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--bg2);padding:0 3px;}
+
+/* SHEET */
+.sheet-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:900;display:none;align-items:flex-end;}
+.sheet-ov.open{display:flex;}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:0 16px calc(16px + var(--sb));width:100%;animation:shUp .3s cubic-bezier(.4,0,.2,1);}
+@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-hdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto;}
+.sheet-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);text-align:center;margin-bottom:12px;}
+.sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.s-btn{padding:13px 10px;border-radius:12px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center;transition:all .12s;}
+.s-btn:active{transform:scale(.95);opacity:.9;}
+.sb-blue{background:var(--accent-g);color:white;}
+.sb-green{background:linear-gradient(135deg,#10b981,#059669);color:white;}
+.sb-amber{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;}
+.sb-purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:white;}
+.sb-red{background:linear-gradient(135deg,#ef4444,#dc2626);color:white;}
+.sb-cyan{background:linear-gradient(135deg,#06b6d4,#0891b2);color:white;}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1100;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:24px;width:100%;max-width:360px;animation:modIn .3s cubic-bezier(.4,0,.2,1);}
+@keyframes modIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-ico{font-size:36px;margin-bottom:10px;}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:6px;}
+.modal-body{font-size:13px;color:var(--ink2);line-height:1.65;margin-bottom:18px;}
+.modal-acts{display:flex;flex-direction:column;gap:8px;}
+.m-btn{padding:12px;border-radius:10px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;}
+.m-btn:active{transform:scale(.97);}
+.mb-p{background:var(--accent-g);color:white;}
+.mb-s{background:var(--surface2);color:var(--ink2);border:1px solid var(--border);}
+
+/* TOAST */
+.toast-wrap{position:fixed;top:108px;left:12px;right:12px;display:flex;flex-direction:column;gap:7px;z-index:1200;pointer-events:none;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-left-width:3px;padding:11px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:tIn .3s ease both;}
+@keyframes tIn{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast.out{animation:tOut .3s ease forwards;}
+@keyframes tOut{to{opacity:0;transform:translateY(-8px) scale(.96)}}
+.t-ico{font-size:19px;flex-shrink:0;}
+.t-title{font-weight:700;font-size:12.5px;}
+.t-desc{font-size:11px;color:var(--ink2);}
+
+/* SECTION TITLE */
+.sec-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);padding:2px 0;}
+
+/* SWIPE HINT */
+.swipe-hint{text-align:center;font-size:9.5px;color:var(--muted);padding:4px 0 0;}
+
+/* STAT DETAIL MODAL content */
+.stat-history{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.sh-row{display:flex;justify-content:space-between;padding:7px 10px;background:var(--surface2);border-radius:7px;}
+.sh-day{font-size:11.5px;color:var(--ink2);}
+.sh-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink);}
+
+::-webkit-scrollbar{width:0;height:0;}
+</style>
+</head>
+<body>
+
+<!-- STATUS BAR -->
+<div class="sb">
+  <div class="sb-t" id="sb-time">09:41</div>
+  <div class="sb-r">
+    <div class="sig"><span></span><span></span><span></span><span></span></div>
+    <div class="bat"><div class="bat-f"></div></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb1">
+    <div class="logo">
+      <div class="logo-i">🤖</div>
+      <div class="logo-t">Agen<span>Toko</span></div>
+    </div>
+    <div class="tb-acts">
+      <div class="live-b"><div class="live-d"></div>LIVE</div>
+      <div class="tb-btn" onclick="openModal('roi-modal')" title="ROI">💰</div>
+      <div class="tb-btn" id="notif-tb-btn" onclick="switchPage('agents');scrollToNotif()"><span>🔔</span><div class="tb-dot" id="tb-notif-dot"></div></div>
+    </div>
+  </div>
+  <div class="tb2">
+    <div>
+      <div class="tb-title">Halo, Rina 👋</div>
+      <div class="tb-sub">5 agen aktif · semua sistem berjalan</div>
+    </div>
+    <div class="tb-time" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="tick-lbl">⚡ LIVE</div>
+  <div class="tick-scroll"><div class="tick-track" id="tick-track">
+    <span class="tick-item"><span class="tick-dot" style="background:var(--green)"></span>CS Agent balas Dewi R. 1.2 detik</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--amber)"></span>Follow-up konversi lead Budi S.</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--purple)"></span>Review Responder balas 3 bintang 5</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--accent)"></span>Order Tracker update 7 pesanan otomatis</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Listing Writer selesaikan 4 produk SEO</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--cyan)"></span>Komplain dieskalasi ke owner</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--green)"></span>CS Agent balas Dewi R. 1.2 detik</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--amber)"></span>Follow-up konversi lead Budi S.</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--purple)"></span>Review Responder balas 3 bintang 5</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--accent)"></span>Order Tracker update 7 pesanan otomatis</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Listing Writer selesaikan 4 produk SEO</span>
+    <span class="tick-item"><span class="tick-dot" style="background:var(--cyan)"></span>Komplain dieskalasi ke owner</span>
+  </div></div>
+</div>
+
+<!-- PAGES -->
+<div class="pages">
+
+  <!-- ══ PAGE: DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+
+    <!-- Banner (tappable → buka modal platform) -->
+    <div class="banner" onclick="openModal('platform-modal')">
+      <div class="banner-icon">⚡</div>
+      <div class="banner-title">5 Agen AI aktif 24/7 — tap untuk lihat detail</div>
+      <div class="banner-sub">Balas chat, proses order, follow-up lead & kelola review otomatis.</div>
+      <div class="banner-pills">
+        <div class="bp g" onclick="pillTap(event,'Shopee')">✓ Shopee</div>
+        <div class="bp g" onclick="pillTap(event,'Tokopedia')">✓ Tokopedia</div>
+        <div class="bp b" onclick="pillTap(event,'WhatsApp')">✓ WhatsApp</div>
+        <div class="bp p" onclick="pillTap(event,'TikTok Shop')">✓ TikTok Shop</div>
+        <div class="bp a" onclick="pillTap(event,'Lazada')">✓ Lazada</div>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card sc-b" onclick="openStatDetail('chat')">
+        <div class="s-icon-row">
+          <div class="s-icon" style="background:rgba(59,130,246,.15)">💬</div>
+          <div class="dlt d-up" id="d-chat">↑ 18%</div>
+        </div>
+        <div class="s-val" id="stat-chat">247</div>
+        <div class="s-lbl">Chat Dibalas</div>
+        <div class="sparkline" id="sp-chat"></div>
+      </div>
+      <div class="stat-card sc-g" onclick="openStatDetail('order')">
+        <div class="s-icon-row">
+          <div class="s-icon" style="background:rgba(16,185,129,.15)">📦</div>
+          <div class="dlt d-up" id="d-order">↑ 12%</div>
+        </div>
+        <div class="s-val" id="stat-order">89</div>
+        <div class="s-lbl">Pesanan Proses</div>
+        <div class="sparkline" id="sp-order"></div>
+      </div>
+      <div class="stat-card sc-a" onclick="openStatDetail('lead')">
+        <div class="s-icon-row">
+          <div class="s-icon" style="background:rgba(245,158,11,.15)">🔄</div>
+          <div class="dlt d-up" id="d-lead">↑ 34%</div>
+        </div>
+        <div class="s-val" id="stat-lead">34</div>
+        <div class="s-lbl">Lead Follow-up</div>
+        <div class="sparkline" id="sp-lead"></div>
+      </div>
+      <div class="stat-card sc-p" onclick="openStatDetail('conv')">
+        <div class="s-icon-row">
+          <div class="s-icon" style="background:rgba(139,92,246,.15)">⚡</div>
+          <div class="dlt d-up" id="d-conv">↑ 9%</div>
+        </div>
+        <div class="s-val" id="stat-conv">68<span style="font-size:14px;color:var(--muted)">%</span></div>
+        <div class="s-lbl">Konversi</div>
+        <div class="sparkline" id="sp-conv"></div>
+      </div>
+    </div>
+
+    <!-- Revenue Card (tappable rows) -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">💰 Pendapatan Hari Ini</div>
+        <div class="badge" style="background:var(--green-s);color:var(--green)">↑ Live</div>
+      </div>
+      <div class="rev-content">
+        <div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:2px">Total Terkonfirmasi</div>
+          <div class="rev-big" id="stat-revenue">Rp 4.780.000</div>
+        </div>
+        <div class="rev-row" onclick="showToast('📦','89 Pesanan Lunas','Semua diproses otomatis oleh Order Tracker','var(--green)')">
+          <span class="rev-l">📦 Pesanan Lunas</span><span class="rev-v" id="rev-orders">89 pesanan</span>
+        </div>
+        <div class="rev-row" onclick="showToast('🎯','Dari Lead Convert','34 lead dikonversi × avg Rp 36.500','var(--amber)')">
+          <span class="rev-l">🎯 Dari Lead Convert</span><span class="rev-v">Rp 1.240.000</span>
+        </div>
+        <div class="rev-row" onclick="showToast('⭐','Repeat Buyer 42%','Pembeli lama kembali beli — tanda produk & CS bagus!','var(--purple)')">
+          <span class="rev-l">⭐ Repeat Buyer</span><span class="rev-v">42%</span>
+        </div>
+        <div class="rev-row" onclick="showToast('⏱','Waktu Dihemat','6.2 jam/hari × Rp 50.000/jam = Rp 310.000 nilai hari ini','var(--cyan)')">
+          <span class="rev-l">⏱ Jam Dihemat</span><span class="rev-v" id="hours-saved">6.2 jam</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart with tabs -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">📈 Performa</div>
+        <span style="font-size:10px;color:var(--green);font-weight:700">+14% vs minggu lalu</span>
+      </div>
+      <div class="chart-tabs">
+        <div class="chart-tab active" onclick="switchChart('chat',this)">Chat</div>
+        <div class="chart-tab" onclick="switchChart('order',this)">Order</div>
+        <div class="chart-tab" onclick="switchChart('lead',this)">Lead</div>
+        <div class="chart-tab" onclick="switchChart('revenue',this)">Revenue</div>
+      </div>
+      <div id="chart-tooltip" style="padding:0 14px;display:none;"></div>
+      <div class="chart-area">
+        <div class="chart-wrap" id="chart-wrap"></div>
+      </div>
+      <div class="swipe-hint">Tap bar untuk lihat detail</div>
+    </div>
+
+    <!-- ROI Calc with sliders -->
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">🧮 Kalkulator ROI</div>
+        <div style="font-size:10px;color:var(--muted)">Geser slider</div>
+      </div>
+      <div class="roi-wrap">
+        <div class="roi-slider-wrap">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="roi-lbl">Chat per hari</div>
+            <div class="roi-slider-val" id="slider-chat-val">80</div>
+          </div>
+          <input class="roi-slider" type="range" min="10" max="500" value="80" id="slider-chat" oninput="calcROI()">
+        </div>
+        <div class="roi-slider-wrap">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="roi-lbl">Nilai waktu (Rp/jam)</div>
+            <div class="roi-slider-val" id="slider-rate-val">Rp 50.000</div>
+          </div>
+          <input class="roi-slider" type="range" min="20000" max="500000" step="10000" value="50000" id="slider-rate" oninput="calcROI()">
+        </div>
+        <div class="roi-result" id="roi-result-box">
+          <div class="roi-res-lbl">💡 Nilai Dihemat / Bulan</div>
+          <div class="roi-res-val" id="calc-result">Rp 4,8 Jt</div>
+          <div class="roi-res-sub" id="calc-hours">≈ 96 jam/bulan dibebaskan</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:center">Asumsi: 2 mnt/chat manual × 20 hari kerja</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ PAGE: AGENTS ══ -->
+  <div class="page" id="page-agents">
+    <div class="sec-title">Status Agen AI — Tap untuk detail</div>
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">🤖 Command Center</div>
+        <div class="badge" style="background:var(--green-s);color:var(--green)">● 5 Online</div>
+      </div>
+      <div class="agent-list" id="agent-list"></div>
+    </div>
+
+    <div class="sec-title">Notifikasi Masuk</div>
+    <div class="card" id="notif-card">
+      <div class="card-hdr">
+        <div class="card-title">🔔 Aktivitas Real-time</div>
+        <div class="badge" id="notif-badge" style="background:var(--accent-s);color:var(--accent)">3 Baru</div>
+      </div>
+      <div class="notif-list" id="notif-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: CHAT (AI-powered) ══ -->
+  <div class="page" id="page-chat" style="padding:0;gap:0;">
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="card-hdr" style="background:var(--bg2);flex-shrink:0;border-bottom:1px solid var(--border);">
+        <div class="card-title">
+          💬 CS Agent Live
+          <div class="ai-badge">✨ AI</div>
+        </div>
+        <div class="badge" style="background:var(--green-s);color:var(--green)">● Aktif</div>
+      </div>
+      <!-- Platform selector -->
+      <div class="plat-row" id="plat-row">
+        <div class="plat-btn pb-s sel" onclick="selPlat(this,'Shopee')">🛍 Shopee</div>
+        <div class="plat-btn pb-t" onclick="selPlat(this,'Tokopedia')">🛒 Tokped</div>
+        <div class="plat-btn pb-w" onclick="selPlat(this,'WhatsApp')">💬 WA</div>
+        <div class="plat-btn pb-tt" onclick="selPlat(this,'TikTok Shop')">🎵 TikTok</div>
+        <div class="plat-btn pb-l" onclick="selPlat(this,'Lazada')">📦 Lazada</div>
+      </div>
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <div class="chat-bar">
+        <input class="chat-inp" type="text" id="chat-inp" placeholder="Ketik pesan sebagai pembeli…">
+        <button class="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: MORE ══ -->
+  <div class="page" id="page-more">
+    <!-- Profile -->
+    <div class="card">
+      <div style="padding:16px;display:flex;align-items:center;gap:12px;">
+        <div style="width:50px;height:50px;border-radius:50%;background:var(--accent-g);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;box-shadow:0 0 16px rgba(59,130,246,.4);">RK</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:800;">Toko Rina K.</div>
+          <div style="font-size:11px;color:var(--muted);">Growth Plan · Aktif sejak Jan 2024</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;padding:4px 10px;background:var(--green-s);color:var(--green);border-radius:20px;">✓ Aktif</div>
+      </div>
+    </div>
+
+    <!-- ROI summary -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(99,102,241,.08));border-color:rgba(59,130,246,.25);">
+      <div style="padding:16px;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;">💡 ROI Bulan Ini</div>
+        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;background:var(--accent-g);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Rp 4,2 Jt</div>
+        <div style="font-size:11px;color:var(--ink2);margin-top:4px;">waktu dihemat × nilai jam kerja kamu</div>
+        <div style="height:5px;background:var(--border);border-radius:3px;margin-top:12px;overflow:hidden;"><div style="height:100%;width:0%;background:var(--accent-g);border-radius:3px;transition:width 1.5s ease;" id="roi-prog-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- Agen Settings Toggles -->
+    <div class="sec-title">Pengaturan Agen</div>
+    <div class="card">
+      <div class="toggle-row" onclick="toggleSetting(this,'cs-toggle')">
+        <div><div class="toggle-label">💬 CS Agent</div><div class="toggle-sub">Auto-reply chat pembeli 24/7</div></div>
+        <div class="toggle on" id="cs-toggle"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting(this,'fo-toggle')">
+        <div><div class="toggle-label">🔄 Follow-up Agent</div><div class="toggle-sub">Re-engage calon pembeli</div></div>
+        <div class="toggle on" id="fo-toggle"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting(this,'rev-toggle')">
+        <div><div class="toggle-label">⭐ Review Responder</div><div class="toggle-sub">Auto-balas review masuk</div></div>
+        <div class="toggle on" id="rev-toggle"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting(this,'ord-toggle')">
+        <div><div class="toggle-label">📦 Order Tracker</div><div class="toggle-sub">Monitor & update status pesanan</div></div>
+        <div class="toggle on" id="ord-toggle"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting(this,'lst-toggle')">
+        <div><div class="toggle-label">✍️ Listing Writer</div><div class="toggle-sub">Generate deskripsi produk SEO</div></div>
+        <div class="toggle on" id="lst-toggle"></div>
+      </div>
+    </div>
+
+    <!-- Menu -->
+    <div class="sec-title">Menu</div>
+    <div class="card">
+      <div class="menu-item" onclick="menuTap('Analytics','Lihat laporan performa lengkap toko kamu')">
+        <div class="menu-ico" style="background:rgba(59,130,246,.15)">📊</div>
+        <div class="menu-label">Analytics</div>
+        <div class="menu-badge">Baru</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="menuTap('Revenue Report','Download laporan keuangan bulanan dalam format PDF')">
+        <div class="menu-ico" style="background:rgba(16,185,129,.15)">💰</div>
+        <div class="menu-label">Revenue Report</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="menuTap('Review Manager','Kelola semua review dari semua platform di 1 tempat')">
+        <div class="menu-ico" style="background:rgba(139,92,246,.15)">⭐</div>
+        <div class="menu-label">Review Manager</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="menuTap('Listing Writer','Generate bulk deskripsi produk SEO-optimized dengan AI')">
+        <div class="menu-ico" style="background:rgba(6,182,212,.15)">✍️</div>
+        <div class="menu-label">Listing Writer</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="openModal('roi-modal')">
+        <div class="menu-ico" style="background:rgba(245,158,11,.15)">🧮</div>
+        <div class="menu-label">Kalkulator ROI</div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="menuTap('Pengaturan','Kelola integrasi platform, skrip CS, dan pengaturan akun')">
+        <div class="menu-ico" style="background:rgba(255,255,255,.06)">⚙️</div>
+        <div class="menu-label">Pengaturan</div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- DEMO FAB -->
+<button style="position:fixed;bottom:calc(var(--nav-h) + var(--sb) + 12px);right:14px;width:48px;height:48px;background:var(--accent-g);border:none;border-radius:50%;font-size:20px;box-shadow:0 4px 20px rgba(59,130,246,.5);cursor:pointer;z-index:850;display:flex;align-items:center;justify-content:center;transition:all .15s;" onclick="openSheet()" id="demo-fab">🎛</button>
+
+<!-- DEMO SHEET -->
+<div class="sheet-ov" id="sheet-ov" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet">
+    <div class="sheet-hdl"></div>
+    <div class="sheet-title">🎛 Demo Controls</div>
+    <div class="sheet-grid">
+      <button class="s-btn sb-blue" onclick="triggerOrder();closeSheet()">📦 Order Masuk</button>
+      <button class="s-btn sb-green" onclick="triggerLead();closeSheet()">🎯 Lead Konversi</button>
+      <button class="s-btn sb-amber" onclick="triggerReview();closeSheet()">⭐ Review Baru</button>
+      <button class="s-btn sb-purple" onclick="triggerAutoReply();closeSheet()">🤖 Auto Reply</button>
+      <button class="s-btn sb-red" onclick="triggerComplain();closeSheet()">⚠️ Komplain</button>
+      <button class="s-btn sb-cyan" onclick="triggerListing();closeSheet()">✍️ Listing Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROI MODAL -->
+<div class="modal-ov" id="roi-modal">
+  <div class="modal">
+    <div class="modal-ico">💰</div>
+    <div class="modal-title">Berapa ROI AgenToko untukmu?</div>
+    <div class="modal-body">Dengan <b>80 chat/hari</b> dan waktu balas manual <b>3–5 menit/chat</b>, kamu bisa kehilangan <b>4–7 jam kerja per hari</b> hanya untuk CS.<br><br>AgenToko mengotomatiskan itu semua — kamu fokus <b>scaling bisnis</b>.</div>
+    <div class="modal-acts">
+      <button class="m-btn mb-p" onclick="closeModal('roi-modal');showToast('🚀','Tertarik?','Hubungi tim kami untuk onboarding!','var(--green)')">Minta Demo Eksklusif 🚀</button>
+      <button class="m-btn mb-s" onclick="closeModal('roi-modal')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORM MODAL -->
+<div class="modal-ov" id="platform-modal">
+  <div class="modal">
+    <div class="modal-ico">🔗</div>
+    <div class="modal-title">Platform Terhubung</div>
+    <div class="modal-body" style="margin-bottom:12px">AgenToko aktif di 5 platform sekaligus — semua dikelola dari 1 dashboard.</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:9px;"><span style="font-size:18px">🛍</span><div><div style="font-size:13px;font-weight:700;">Shopee</div><div style="font-size:10.5px;color:var(--muted)">247 chat dibalas · 89 order</div></div><div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--green)">● Aktif</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:9px;"><span style="font-size:18px">🛒</span><div><div style="font-size:13px;font-weight:700;">Tokopedia</div><div style="font-size:10.5px;color:var(--muted)">134 chat dibalas · 52 order</div></div><div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--green)">● Aktif</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:9px;"><span style="font-size:18px">💬</span><div><div style="font-size:13px;font-weight:700;">WhatsApp</div><div style="font-size:10.5px;color:var(--muted)">89 pesan dibalas · 21 lead</div></div><div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--green)">● Aktif</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:9px;"><span style="font-size:18px">🎵</span><div><div style="font-size:13px;font-weight:700;">TikTok Shop</div><div style="font-size:10.5px;color:var(--muted)">67 chat dibalas · 18 order</div></div><div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--green)">● Aktif</div></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:9px;"><span style="font-size:18px">📦</span><div><div style="font-size:13px;font-weight:700;">Lazada</div><div style="font-size:10.5px;color:var(--muted)">43 chat dibalas · 12 order</div></div><div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--green)">● Aktif</div></div>
+    </div>
+    <div class="modal-acts"><button class="m-btn mb-s" onclick="closeModal('platform-modal')">Tutup</button></div>
+  </div>
+</div>
+
+<!-- STAT DETAIL MODAL -->
+<div class="modal-ov" id="stat-modal">
+  <div class="modal">
+    <div class="modal-ico" id="stat-modal-ico">💬</div>
+    <div class="modal-title" id="stat-modal-title">Detail Stat</div>
+    <div id="stat-modal-body"></div>
+    <div class="modal-acts" style="margin-top:16px;"><button class="m-btn mb-s" onclick="closeModal('stat-modal')">Tutup</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="nb active" id="nav-dashboard" onclick="switchPage('dashboard')">
+    <div class="nb-ico">⬛</div><div class="nb-lbl">Dashboard</div>
+  </div>
+  <div class="nb" id="nav-agents" onclick="switchPage('agents')">
+    <div class="nb-ico">🤖</div><div class="nb-lbl">Agen</div>
+    <div class="nb-badge" id="agent-badge" style="display:none">!</div>
+  </div>
+  <div class="nb" id="nav-chat" onclick="switchPage('chat')">
+    <div class="nb-ico">💬</div><div class="nb-lbl">Chat</div>
+    <div class="nb-badge" id="chat-badge">12</div>
+  </div>
+  <div class="nb" id="nav-more" onclick="switchPage('more')">
+    <div class="nb-ico">☰</div><div class="nb-lbl">Lainnya</div>
+  </div>
+</nav>
+
+<script>
+/* ══ CLOCK ══ */
+function tick(){
+  const t=new Date();
+  const s=t.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('clock').textContent=s;
+  document.getElementById('sb-time').textContent=t.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(tick,1000); tick();
+
+/* ══ PAGE SWITCH ══ */
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const nb=document.getElementById('nav-'+name);
+  if(nb) nb.classList.add('active');
+  if(name==='chat'){
+    const b=document.getElementById('chat-badge');
+    b.textContent='0'; b.style.display='none';
+  }
+  if(name==='more'){
+    setTimeout(()=>{document.getElementById('roi-prog-bar').style.width='72%';},300);
+  }
+}
+
+/* ══ TOAST ══ */
+function showToast(icon,title,desc,color='var(--accent)'){
+  const c=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  t.className='toast'; t.style.borderLeftColor=color;
+  t.innerHTML=`<div class="t-ico">${icon}</div><div><div class="t-title">${title}</div><div class="t-desc">${desc}</div></div>`;
+  c.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),300); },3200);
+}
+
+/* ══ MODAL ══ */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+});
+
+/* ══ SHEET ══ */
+function openSheet(){document.getElementById('sheet-ov').classList.add('open');}
+function closeSheet(){document.getElementById('sheet-ov').classList.remove('open');}
+
+/* ══ SPARKLINES ══ */
+const sparkData={
+  chat:[178,204,196,231,219,244,247],
+  order:[62,74,68,81,77,86,89],
+  lead:[20,24,22,28,26,31,34],
+  conv:[58,62,60,65,64,67,68],
+};
+function drawSpark(id,data,color){
+  const el=document.getElementById(id); if(!el)return;
+  const max=Math.max(...data);
+  el.innerHTML=data.map((v,i)=>`<div class="spark" style="height:${Math.round(v/max*16)+2}px;background:${i===data.length-1?color:'rgba(255,255,255,.12)'}"></div>`).join('');
+}
+drawSpark('sp-chat',sparkData.chat,'#3b82f6');
+drawSpark('sp-order',sparkData.order,'#10b981');
+drawSpark('sp-lead',sparkData.lead,'#f59e0b');
+drawSpark('sp-conv',sparkData.conv,'#8b5cf6');
+
+/* ══ CHART ══ */
+const chartSets={
+  chat:{data:[178,204,196,231,219,244,247],label:'Chat',color:'#3b82f6',color2:'#6366f1',unit:''},
+  order:{data:[62,74,68,81,77,86,89],label:'Order',color:'#10b981',color2:'#059669',unit:''},
+  lead:{data:[20,24,22,28,26,31,34],label:'Lead',color:'#f59e0b',color2:'#d97706',unit:''},
+  revenue:{data:[2100000,2450000,2300000,2780000,2650000,2940000,4780000],label:'Revenue',color:'#8b5cf6',color2:'#7c3aed',unit:'Rp '},
+};
+const days=['Sen','Sel','Rab','Kam','Jum','Sab','Hari ini'];
+let activeChart='chat';
+
+function switchChart(key,el){
+  activeChart=key;
+  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderChart();
+  document.getElementById('chart-tooltip').style.display='none';
+}
+
+function renderChart(){
+  const set=chartSets[activeChart];
+  const max=Math.max(...set.data);
+  document.getElementById('chart-wrap').innerHTML=set.data.map((v,i)=>`
+    <div class="chart-col" onclick="showChartTip(${i},${v})">
+      <div class="chart-bg">
+        <div class="chart-fill" style="height:${Math.round(v/max*100)}%;background:linear-gradient(180deg,${set.color},${set.color2});opacity:${i===set.data.length-1?1:.45}"></div>
+      </div>
+      <div class="chart-lbl">${days[i]}</div>
+    </div>`).join('');
+}
+renderChart();
+
+function showChartTip(i,v){
+  const set=chartSets[activeChart];
+  const el=document.getElementById('chart-tooltip');
+  const fmtV=activeChart==='revenue'?'Rp '+v.toLocaleString('id-ID'):v;
+  el.innerHTML=`<div class="chart-tooltip">${days[i]}: <b>${fmtV}</b> ${set.label}</div>`;
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',2000);
+}
+
+/* ══ AGENTS ══ */
+const agents=[
+  {icon:'💬',name:'CS Agent',task:'Auto-reply chat pembeli 24/7',count:247,unit:'chat',color:'rgba(59,130,246,.15)',pct:88,status:'on',
+   detail:{today:'247 chat',avgResp:'1.2 detik',converted:'34',satisfaction:'98%'}},
+  {icon:'✍️',name:'Listing Writer',task:'Generate deskripsi produk SEO',count:12,unit:'produk',color:'rgba(16,185,129,.15)',pct:100,status:'on',
+   detail:{today:'12 listing',avgResp:'45 detik/listing',converted:'—',satisfaction:'100%'}},
+  {icon:'📦',name:'Order Tracker',task:'Update & notifikasi status order',count:89,unit:'pesanan',color:'rgba(245,158,11,.15)',pct:74,status:'on',
+   detail:{today:'89 pesanan',avgResp:'Otomatis',converted:'—',satisfaction:'97%'}},
+  {icon:'🔄',name:'Follow-up Agent',task:'Re-engage & konversi lead',count:34,unit:'lead',color:'rgba(139,92,246,.15)',pct:62,status:'busy',
+   detail:{today:'34 follow-up',avgResp:'30 detik',converted:'12',satisfaction:'94%'}},
+  {icon:'⭐',name:'Review Responder',task:'Kelola review & reputasi toko',count:18,unit:'review',color:'rgba(239,68,68,.1)',pct:55,status:'on',
+   detail:{today:'18 review',avgResp:'5 menit',converted:'—',satisfaction:'100%'}},
+];
+
+let expandedAgent=null;
+function renderAgents(){
+  document.getElementById('agent-list').innerHTML=agents.map((a,i)=>`
+    <div>
+      <div class="agent-row ${expandedAgent===i?'expanded':''}" onclick="toggleAgent(${i})">
+        <div class="agent-ava" style="background:${a.color}">${a.icon}</div>
+        <div class="agent-info">
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-task">${a.task}</div>
+          <div class="agent-prog"><div class="agent-prog-f" style="width:${a.pct}%"></div></div>
+        </div>
+        <div class="agent-stat-r">
+          <div class="agent-num" id="ac-${i}">${a.count}</div>
+          <div class="agent-unit">${a.unit}</div>
+          <div class="s-pill ${a.status==='on'?'sp-on':'sp-busy'}"><div class="sdot"></div>${a.status==='on'?'Online':'Sibuk'}</div>
+        </div>
+      </div>
+      <div class="agent-detail ${expandedAgent===i?'open':''}" id="adet-${i}">
+        <div class="agent-detail-stat"><span class="ads-label">📅 Hari ini</span><span class="ads-val">${a.detail.today}</span></div>
+        <div class="agent-detail-stat"><span class="ads-label">⚡ Avg Respons</span><span class="ads-val">${a.detail.avgResp}</span></div>
+        <div class="agent-detail-stat"><span class="ads-label">🎯 Dikonversi</span><span class="ads-val">${a.detail.converted}</span></div>
+        <div class="agent-detail-stat"><span class="ads-label">😊 Kepuasan</span><span class="ads-val">${a.detail.satisfaction}</span></div>
+        <div class="agent-action-btn" onclick="agentAction(${i},event)">⚡ Jalankan Sekarang</div>
+      </div>
+    </div>`).join('');
+}
+renderAgents();
+
+function toggleAgent(i){
+  expandedAgent = expandedAgent===i ? null : i;
+  renderAgents();
+}
+
+function agentAction(i,e){
+  e.stopPropagation();
+  const a=agents[i];
+  a.count++; a.pct=Math.min(99,a.pct+2);
+  renderAgents();
+  showToast(a.icon,`${a.name} Dijalankan!`,`Memproses ${a.count} ${a.unit} sekarang`,'var(--accent)');
+}
+
+/* ══ NOTIFICATIONS ══ */
+let notifs=[
+  {icon:'📦',bg:'rgba(16,185,129,.15)',title:'Pesanan #TK-8821 Dikonfirmasi',desc:'CS Agent membalas notifikasi otomatis ke pembeli',time:'2 mnt lalu',isNew:true},
+  {icon:'🔄',bg:'rgba(245,158,11,.15)',title:'Lead Berhasil Dikonversi',desc:'Budi S. checkout setelah follow-up ke-2',time:'8 mnt lalu',isNew:true},
+  {icon:'⭐',bg:'rgba(139,92,246,.15)',title:'Review ⭐⭐⭐⭐⭐ dari Annisa',desc:'Review Responder sudah membalas otomatis',time:'15 mnt lalu',isNew:true},
+  {icon:'💬',bg:'rgba(239,68,68,.1)',title:'Komplain Terdeteksi & Dieskalasi',desc:'CS Agent mengirim alert ke kamu',time:'22 mnt lalu',isNew:false},
+  {icon:'✍️',bg:'rgba(59,130,246,.15)',title:'12 Listing Selesai Dibuat',desc:'SEO-ready, langsung aktif di toko',time:'1 jam lalu',isNew:false},
+];
+
+function renderNotifs(){
+  document.getElementById('notif-list').innerHTML=notifs.map((n,i)=>`
+    <div class="notif-item ${n.isNew?'new':''}" style="animation-delay:${i*.05}s" onclick="dismissNotif(${i})">
+      <div class="ni-ico" style="background:${n.bg}">${n.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ni-title">${n.title}</div>
+        <div class="ni-desc">${n.desc}</div>
+        <div class="ni-time">${n.time}</div>
+      </div>
+      <div class="ni-dismiss">✕</div>
+    </div>`).join('');
+  const nc=notifs.filter(n=>n.isNew).length;
+  document.getElementById('notif-badge').textContent=nc>0?`${nc} Baru`:'Terbaca';
+  // update topbar dot
+  document.getElementById('tb-notif-dot').style.display=nc>0?'block':'none';
+}
+renderNotifs();
+
+function dismissNotif(i){
+  notifs[i].isNew=false;
+  notifs.splice(i,1);
+  renderNotifs();
+}
+
+function addNotif(n){
+  notifs.unshift(n); renderNotifs();
+  // show agent badge
+  const ab=document.getElementById('agent-badge');
+  ab.style.display='flex'; ab.textContent='!';
+}
+
+function scrollToNotif(){
+  setTimeout(()=>{
+    document.getElementById('notif-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
+}
+
+/* ══ AI CHAT (via Anthropic API) ══ */
+let activePlat='Shopee';
+let chatHistory=[];
+
+function selPlat(el,name){
+  document.querySelectorAll('.plat-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  activePlat=name;
+  showToast('🔄','Platform Dipilih',`Sekarang melihat chat dari ${name}`,'var(--accent)');
+}
+
+const initMsgs=[
+  {from:'inc',name:'Dewi R.',ava:'👩',text:'Kak, sepatunya masih ada size 38 gak?',time:'09:14'},
+  {from:'out',name:'CS Agent 🤖',ava:'🤖',text:'Halo Kak Dewi! Size 38 masih ready semua warna 😊 Mau warna apa, Kak?',time:'09:14'},
+  {from:'inc',name:'Dewi R.',ava:'👩',text:'Yang putih ada gak?',time:'09:15'},
+  {from:'out',name:'CS Agent 🤖',ava:'🤖',text:'Ada Kak! Putih size 38 tersedia. Langsung order sekarang? Saya bantu proses 🛒',time:'09:15'},
+];
+
+function initChat(){
+  document.getElementById('chat-msgs').innerHTML='';
+  chatHistory=[];
+  initMsgs.forEach(m=>appendMsg(m.from,m.name,m.ava,m.text,m.time,false));
+  chatHistory=[
+    {role:'user',content:'Kak, sepatunya masih ada size 38 gak?'},
+    {role:'assistant',content:'Halo Kak Dewi! Size 38 masih ready semua warna 😊 Mau warna apa, Kak?'},
+    {role:'user',content:'Yang putih ada gak?'},
+    {role:'assistant',content:'Ada Kak! Putih size 38 tersedia. Langsung order sekarang? Saya bantu proses 🛒'},
+  ];
+}
+initChat();
+
+const nowT=()=>new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+
+function appendMsg(from,name,ava,text,time,animate=true){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.className=`msg ${from==='out'?'out':'inc'}`;
+  if(!animate) d.style.animation='none';
+  d.innerHTML=`
+    <div class="msg-ava" style="background:${from==='out'?'rgba(59,130,246,.2)':'rgba(255,255,255,.05)'}">${ava}</div>
+    <div class="msg-body">
+      <div class="msg-who">${name}${from==='inc'?' · '+activePlat:''}</div>
+      <div class="msg-bub">${text}</div>
+      <div class="msg-t">${time}${from==='out'?' <span style="color:var(--green)">✓✓</span>':''}</div>
+    </div>`;
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+}
+
+function showTypingIndicator(){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.id='typing'; d.className='msg inc';
+  d.innerHTML=`<div class="msg-ava" style="background:rgba(59,130,246,.2)">🤖</div><div class="msg-body"><div class="msg-who">CS Agent 🤖 <span class="ai-badge">✨ AI</span></div><div class="msg-bub ai-typing"><div class="tdots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div></div>`;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-inp');
+  const text=inp.value.trim(); if(!text)return;
+  inp.value='';
+
+  const t=nowT();
+  appendMsg('inc','Kamu (Demo Buyer)','👤',text,t);
+  chatHistory.push({role:'user',content:text});
+
+  showTypingIndicator();
+  bumpStat('stat-chat',1);
+  agents[0].count++; renderAgents();
+
+  // bump chat badge if not on chat page
+  const cb=document.getElementById('chat-badge');
+  if(!document.getElementById('nav-chat').classList.contains('active')){
+    cb.textContent=parseInt(cb.textContent||0)+1;
+    cb.style.display='flex';
+  }
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:300,
+        system:`Kamu adalah CS Agent AI untuk toko online Indonesia bernama "Toko Rina K." di platform ${activePlat}. Kamu membalas dengan ramah, singkat, dan natural seperti CS toko online Indonesia. Gunakan bahasa Indonesia santai, emoji secukupnya. Selalu berusaha bantu pembeli agar checkout. Jangan pernah bilang kamu AI kecuali ditanya. Nama kamu: CS Agent.`,
+        messages:chatHistory,
+      })
+    });
+    const data=await res.json();
+    removeTyping();
+    const reply=data.content?.[0]?.text || 'Maaf Kak, saya sedang sibuk sebentar. Silakan coba lagi ya! 🙏';
+    appendMsg('out','CS Agent 🤖','🤖',reply,nowT());
+    chatHistory.push({role:'assistant',content:reply});
+    showToast('💬','CS Agent Membalas','AI merespons dalam <2 detik','var(--accent)');
+    chartSets.chat.data[6]++; renderChart();
+  } catch(err){
+    removeTyping();
+    const fallback='Terima kasih sudah menghubungi! Ada yang bisa kami bantu lebih lanjut? 😊';
+    appendMsg('out','CS Agent 🤖','🤖',fallback,nowT());
+    chatHistory.push({role:'assistant',content:fallback});
+  }
+}
+
+document.getElementById('chat-inp').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+
+/* ══ BUMP STAT ══ */
+function bumpStat(id,amt=1){
+  const el=document.getElementById(id); if(!el)return;
+  const raw=parseInt(el.textContent.replace(/\D/g,''))+amt;
+  const suf=el.innerHTML.match(/<span[^>]*>.*?<\/span>/)?.[0]||'';
+  el.innerHTML=raw+suf;
+  el.style.color='var(--green)'; el.style.transform='scale(1.12)'; el.style.transition='color .3s,transform .3s';
+  setTimeout(()=>{el.style.color='';el.style.transform='';},600);
+}
+
+/* ══ DEMO TRIGGERS ══ */
+function triggerOrder(){
+  const orders=['#TK-9104','#SP-7732','#TK-9105','#TT-2231','#LZ-4490'];
+  const names=['Sari W.','Budi K.','Andi P.','Leni R.','Hendra M.'];
+  const prices=[185000,250000,99000,320000,175000];
+  const o=orders[Math.floor(Math.random()*orders.length)];
+  const n=names[Math.floor(Math.random()*names.length)];
+  const p=prices[Math.floor(Math.random()*prices.length)];
+  bumpStat('stat-order');
+  agents[2].count++; agents[2].pct=Math.min(99,agents[2].pct+2); renderAgents();
+  chartSets.order.data[6]++; renderChart();
+  const revEl=document.getElementById('stat-revenue');
+  const cur=parseInt(revEl.textContent.replace(/\D/g,''));
+  revEl.textContent='Rp '+(cur+p).toLocaleString('id-ID');
+  const roEl=document.getElementById('rev-orders');
+  roEl.textContent=(parseInt(roEl.textContent)+1)+' pesanan';
+  addNotif({icon:'📦',bg:'rgba(16,185,129,.15)',title:`Order ${o} — Rp ${p.toLocaleString('id-ID')}`,desc:`${n} baru saja checkout. Order Tracker memproses.`,time:'Baru saja',isNew:true});
+  showToast('📦',`Order Baru: ${o}`,`${n} — Rp ${p.toLocaleString('id-ID')}`,'var(--green)');
+}
+
+function triggerLead(){
+  const names=['Hendra S.','Maya L.','Rizky A.','Fitri N.','Bagas W.'];
+  const n=names[Math.floor(Math.random()*names.length)];
+  bumpStat('stat-lead');
+  agents[3].count++; agents[3].pct=Math.min(99,agents[3].pct+3); renderAgents();
+  chartSets.lead.data[6]++; renderChart();
+  addNotif({icon:'🎯',bg:'rgba(245,158,11,.15)',title:'Lead Berhasil Konversi!',desc:`${n} checkout setelah follow-up otomatis ke-2`,time:'Baru saja',isNew:true});
+  showToast('🎯','Lead Konversi!',`${n} checkout — follow-up berhasil`,'var(--amber)');
+}
+
+function triggerReview(){
+  const names=['Annisa R.','Dodi K.','Sinta M.','Yogi P.','Reza F.'];
+  const n=names[Math.floor(Math.random()*names.length)];
+  agents[4].count++; agents[4].pct=Math.min(99,agents[4].pct+2); renderAgents();
+  addNotif({icon:'⭐',bg:'rgba(139,92,246,.15)',title:`Review ⭐⭐⭐⭐⭐ dari ${n}`,desc:'Review Responder sudah membalas otomatis',time:'Baru saja',isNew:true});
+  showToast('⭐','Review Bintang 5!',`${n} — sudah dibalas otomatis`,'var(--purple)');
+}
+
+function triggerAutoReply(){
+  const msgs=['Kak, diskon beli 2 pcs ada?','Estimasi ke Surabaya berapa hari?','Warna hijau army ada gak?','Boleh tukar ukuran kalau kebesaran?','Apakah ada garansi produk?'];
+  const m=msgs[Math.floor(Math.random()*msgs.length)];
+  switchPage('chat');
+  setTimeout(()=>{
+    document.getElementById('chat-inp').value=m;
+    sendMsg();
+  },300);
+}
+
+function triggerComplain(){
+  const issues=['Barang belum sampai 5 hari','Produk rusak saat diterima','Ukuran tidak sesuai deskripsi'];
+  const names=['Andi F.','Susi R.','Bimo K.'];
+  const issue=issues[Math.floor(Math.random()*issues.length)];
+  const name=names[Math.floor(Math.random()*names.length)];
+  switchPage('chat');
+  setTimeout(()=>{
+    document.getElementById('chat-inp').value=`KOMPLAIN: ${issue}`;
+    sendMsg();
+  },300);
+}
+
+function triggerListing(){
+  const count=Math.floor(Math.random()*8)+3;
+  agents[1].count+=count; agents[1].pct=Math.min(99,agents[1].pct+5); renderAgents();
+  addNotif({icon:'✍️',bg:'rgba(59,130,246,.15)',title:`${count} Listing Selesai!`,desc:'Deskripsi SEO-ready, langsung aktif di toko',time:'Baru saja',isNew:true});
+  showToast('✍️',`${count} Listing Done!`,'Keyword SEO dioptimasi otomatis','var(--cyan)');
+}
+
+/* ══ ROI SLIDERS ══ */
+function calcROI(){
+  const c=parseInt(document.getElementById('slider-chat').value)||0;
+  const r=parseInt(document.getElementById('slider-rate').value)||0;
+  document.getElementById('slider-chat-val').textContent=c;
+  document.getElementById('slider-rate-val').textContent='Rp '+r.toLocaleString('id-ID');
+  const totalH=Math.round(c*2*20/60);
+  const val=Math.round(totalH*r);
+  const fmt=v=>v>=1000000?`Rp ${(v/1000000).toFixed(1)} Jt`:v>=1000?`Rp ${Math.round(v/1000)}rb`:`Rp ${v}`;
+  document.getElementById('calc-result').textContent=fmt(val);
+  document.getElementById('calc-hours').textContent=`≈ ${totalH} jam/bulan dibebaskan`;
+}
+calcROI();
+
+/* ══ STAT DETAIL ══ */
+const statInfo={
+  chat:{ico:'💬',title:'Chat Dibalas — Detail',rows:[['Hari ini','247 chat'],['Minggu lalu','210 chat'],['Rata-rata/hari','241 chat'],['Terbaik','256 chat (Sabtu)'],['Waktu dihemat','8.2 jam/hari']]},
+  order:{ico:'📦',title:'Pesanan Diproses — Detail',rows:[['Hari ini','89 pesanan'],['Nilai total','Rp 4.780.000'],['Konfirmasi otomatis','100%'],['Notifikasi terkirim','89/89'],['Rata-rata/hari','82 pesanan']]},
+  lead:{ico:'🔄',title:'Lead Follow-up — Detail',rows:[['Hari ini','34 lead'],['Berhasil konversi','12 lead (35%)'],['Avg follow-up ke-','1.8x'],['Revenue dari lead','Rp 1.240.000'],['Waktu avg respons','30 detik']]},
+  conv:{ico:'⚡',title:'Tingkat Konversi — Detail',rows:[['Hari ini','68%'],['Minggu lalu','59%'],['Kenaikan','+9%'],['Industri rata-rata','42%'],['AgenToko vs manual','+26poin']]},
+};
+function openStatDetail(key){
+  const info=statInfo[key];
+  document.getElementById('stat-modal-ico').textContent=info.ico;
+  document.getElementById('stat-modal-title').textContent=info.title;
+  document.getElementById('stat-modal-body').innerHTML=`<div class="stat-history">${info.rows.map(r=>`<div class="sh-row"><span class="sh-day">${r[0]}</span><span class="sh-val">${r[1]}</span></div>`).join('')}</div>`;
+  openModal('stat-modal');
+}
+
+/* ══ PLATFORM PILLS ══ */
+function pillTap(e,name){
+  e.stopPropagation();
+  const el=e.target;
+  el.classList.toggle('active-pill');
+  showToast('✓',name+' Terhubung','Agen aktif di platform ini','var(--green)');
+  setTimeout(()=>el.classList.remove('active-pill'),600);
+}
+
+/* ══ TOGGLE SETTINGS ══ */
+function toggleSetting(row,id){
+  const t=document.getElementById(id);
+  const isOn=t.classList.toggle('on');
+  const label=row.querySelector('.toggle-label').textContent;
+  showToast(isOn?'✅':'⏸',label,isOn?'Agen diaktifkan':'Agen dijeda sementara',isOn?'var(--green)':'var(--amber)');
+}
+
+/* ══ MENU TAPS ══ */
+function menuTap(title,desc){
+  showToast('📱',title,desc,'var(--accent)');
+}
+
+/* ══ AUTO TICK ══ */
+setInterval(()=>{
+  if(Math.random()<.28){
+    agents[0].count++; renderAgents();
+    const e=document.getElementById('stat-chat');
+    if(e) e.textContent=parseInt(e.textContent)+1;
+    chartSets.chat.data[6]++;
+    if(activeChart==='chat') renderChart();
+    drawSpark('sp-chat',[...chartSets.chat.data],'#3b82f6');
+    if(!document.getElementById('nav-chat').classList.contains('active')){
+      const cb=document.getElementById('chat-badge');
+      cb.textContent=parseInt(cb.textContent||0)+1; cb.style.display='flex';
+    }
+  }
+  if(Math.random()>.82){
+    const e=document.getElementById('hours-saved');
+    if(e){const c=parseFloat(e.textContent);e.textContent=(c+.1).toFixed(1)+' jam';}
+  }
+},5000);
+</script>
+</body>
+</html>
